@@ -144,7 +144,6 @@ h1, h2, h3, p, dl, dd { margin: 0; }
   padding: 15px 20px; border-bottom: 1px solid var(--border); min-height: 52px;
 }
 .card-header h2 { font-family: var(--serif); font-size: 15px; font-weight: 400; }
-.card-header h2::before { content: "— "; color: var(--accent); font-family: var(--mono); font-size: 11px; vertical-align: 2px; }
 .card-header small { color: var(--text-faint); font-size: 10.5px; letter-spacing: .03em; }
 .card-body { padding: 20px; }
 

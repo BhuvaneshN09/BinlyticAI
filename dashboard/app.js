@@ -51,7 +51,7 @@ function destinationInfo(destination) {
   return DESTINATION_INFO[destination] || DESTINATION_INFO.UNKNOWN;
 }
 
-function formatText(value, fallback = "—") {
+function formatText(value, fallback = "0") {
   return value === null || value === undefined || value === "" ? fallback : String(value);
 }
 
@@ -125,7 +125,7 @@ function renderLatestDetection(bins) {
   if (!detection) {
     container.innerHTML = emptyStateMarkup(
       "Waiting for the first item",
-      "Drop something in the bin — the camera's decision shows up here instantly.",
+      "Drop something in the bin and the camera's decision shows up here instantly.",
     );
     return;
   }
@@ -324,7 +324,7 @@ function applyStoredOrFallbackLocation() {
   const stored = localStorage.getItem(BIN_LOCATION_STORAGE_KEY);
   const coords = stored ? JSON.parse(stored) : FALLBACK_MAP_COORDS;
   placeBinMarker(coords);
-  mapStatusText = stored ? "Using last known device location" : "Location permission denied — showing a default position";
+  mapStatusText = stored ? "Using last known device location" : "Location permission denied; showing a default position";
   renderMapMeta(dashboardState?.bins || []);
 }
 
@@ -631,8 +631,8 @@ function populateSplash(analytics) {
   const estimatedKgDiverted = (analytics.totalConfirmed * ESTIMATED_KG_DIVERTED_PER_ITEM).toFixed(1);
   const estimatedCo2Saved = (analytics.destinationCounts.RECYCLING || 0) * ESTIMATED_CO2_KG_SAVED_PER_RECYCLED_ITEM;
 
-  qs("#splash-weight-value").textContent = analytics.totalConfirmed ? `${estimatedKgDiverted} kg` : "—";
-  qs("#splash-co2-value").textContent = analytics.totalConfirmed ? `${estimatedCo2Saved.toFixed(1)} kg` : "—";
+  qs("#splash-weight-value").textContent = analytics.totalConfirmed ? `${estimatedKgDiverted} kg` : "0.0 kg";
+  qs("#splash-co2-value").textContent = analytics.totalConfirmed ? `${estimatedCo2Saved.toFixed(1)} kg` : "0.0 kg";
   qs("#splash-secondary").textContent = analytics.totalConfirmed
     ? `${analytics.totalConfirmed} items confirmed · ${analytics.daysActivelyMonitoring} day${analytics.daysActivelyMonitoring === 1 ? "" : "s"} monitoring`
     : "Waiting for the first confirmed item";

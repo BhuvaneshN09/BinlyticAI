@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/binlytic-logo.png" width="110" alt="Binlytic AI logo"></p>
+
 # Binlytic AI
 
 Binlytic AI is a webcam and CLIP prototype for routing common mall waste to:
