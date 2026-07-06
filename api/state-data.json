@@ -1,0 +1,245 @@
+{
+  "site": {
+    "name": "Binlytic",
+    "subtitle": "Bin monitor"
+  },
+  "bins": [
+    {
+      "id": "WV-001",
+      "name": "Binlytic Bin 01",
+      "location": "Location not set",
+      "floor": null,
+      "distance_m": null,
+      "map_x": 50,
+      "map_y": 50,
+      "last_updated": null,
+      "compartments": [
+        {
+          "type": "RECYCLING"
+        },
+        {
+          "type": "COMPOST"
+        },
+        {
+          "type": "GARBAGE"
+        },
+        {
+          "type": "HAZARDOUS"
+        },
+        {
+          "type": "UNKNOWN"
+        }
+      ],
+      "last_ai_detection": {
+        "event_id": "15869db288",
+        "bin_id": "WV-001",
+        "label": "plastic beverage bottle",
+        "destination": "RECYCLING",
+        "confidence": 0.273,
+        "detected_at": "2026-07-05T17:01:37Z",
+        "status": "waiting_for_sensor"
+      },
+      "last_disposal": {
+        "event_id": "15869db288",
+        "bin_id": "WV-001",
+        "label": "plastic beverage bottle",
+        "destination": "RECYCLING",
+        "confidence": 0.273,
+        "detected_at": "2026-07-05T17:01:37Z",
+        "status": "confirmed",
+        "confirmed_at": "2026-07-05T17:01:41Z",
+        "confirmation_method": "timer"
+      }
+    }
+  ],
+  "pending": {},
+  "history": [
+    {
+      "event_id": "15869db288",
+      "bin_id": "WV-001",
+      "label": "plastic beverage bottle",
+      "destination": "RECYCLING",
+      "confidence": 0.273,
+      "detected_at": "2026-07-05T17:01:37Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T17:01:41Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "b0f33454fe",
+      "bin_id": "WV-001",
+      "label": "plastic beverage bottle",
+      "destination": "RECYCLING",
+      "confidence": 0.276,
+      "detected_at": "2026-07-05T17:01:16Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T17:01:20Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "c784c002a0",
+      "bin_id": "WV-001",
+      "label": "plastic beverage bottle",
+      "destination": "RECYCLING",
+      "confidence": 0.279,
+      "detected_at": "2026-07-05T17:01:11Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T17:01:15Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "37476ecf61",
+      "bin_id": "WV-001",
+      "label": "greasy or wet paper package",
+      "destination": "GARBAGE",
+      "confidence": 0.28,
+      "detected_at": "2026-07-05T17:00:57Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T17:01:03Z",
+      "confirmation_method": "ultrasonic",
+      "entry_sensor_distance_cm": 5.3
+    },
+    {
+      "event_id": "830f285bed",
+      "bin_id": "WV-001",
+      "label": "clean foam food package",
+      "destination": "RECYCLING",
+      "confidence": 0.325,
+      "detected_at": "2026-07-05T17:00:25Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T17:00:29Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "e170a032b3",
+      "bin_id": "WV-001",
+      "label": "plastic beverage bottle",
+      "destination": "RECYCLING",
+      "confidence": 0.274,
+      "detected_at": "2026-07-05T16:59:33Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T16:59:37Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "2202f8ba84",
+      "bin_id": "WV-001",
+      "label": "plastic beverage bottle",
+      "destination": "RECYCLING",
+      "confidence": 0.298,
+      "detected_at": "2026-07-05T16:59:21Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T16:59:25Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "0c74dfaf87",
+      "bin_id": "WV-001",
+      "label": "plastic beverage bottle",
+      "destination": "RECYCLING",
+      "confidence": 0.319,
+      "detected_at": "2026-07-05T16:59:11Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T16:59:14Z",
+      "confirmation_method": "timer"
+    },
+    {
+      "event_id": "2bd01cae75",
+      "bin_id": "WV-001",
+      "label": "thermal cash register receipt",
+      "destination": "GARBAGE",
+      "confidence": 0.279,
+      "detected_at": "2026-07-05T16:58:41Z",
+      "status": "confirmed",
+      "confirmed_at": "2026-07-05T16:58:46Z",
+      "confirmation_method": "ultrasonic",
+      "entry_sensor_distance_cm": 3.4
+    }
+  ],
+  "unknowns": [
+    {
+      "event_id": "cedc32f37c67",
+      "bin_id": "WV-001",
+      "label": "UNKNOWN OBJECT",
+      "confidence": 0.284,
+      "captured_at": "2026-07-05T17:00:45Z",
+      "image_url": "/data/captures/cedc32f37c67.jpg",
+      "description": "Visually closest to food still inside packaging, clean foam food package, greasy or wet paper package",
+      "top_guesses": [
+        {
+          "label": "food still inside packaging",
+          "bin": "GARBAGE",
+          "score": 0.2835
+        },
+        {
+          "label": "clean foam food package",
+          "bin": "RECYCLING",
+          "score": 0.2765
+        },
+        {
+          "label": "greasy or wet paper package",
+          "bin": "GARBAGE",
+          "score": 0.2697
+        }
+      ],
+      "learning_status": "needs-more-evidence",
+      "learning_message": "No safe automatic match yet"
+    },
+    {
+      "event_id": "651a2e0e1ee9",
+      "bin_id": "WV-001",
+      "label": "UNKNOWN OBJECT",
+      "confidence": 0.293,
+      "captured_at": "2026-07-05T17:00:31Z",
+      "image_url": "/data/captures/651a2e0e1ee9.jpg",
+      "description": "Visually closest to food still inside packaging, clean foam food package, flexible snack wrapper or plastic film",
+      "top_guesses": [
+        {
+          "label": "food still inside packaging",
+          "bin": "GARBAGE",
+          "score": 0.2927
+        },
+        {
+          "label": "clean foam food package",
+          "bin": "RECYCLING",
+          "score": 0.2904
+        },
+        {
+          "label": "flexible snack wrapper or plastic film",
+          "bin": "GARBAGE",
+          "score": 0.2899
+        }
+      ],
+      "learning_status": "needs-more-evidence",
+      "learning_message": "No safe automatic match yet"
+    },
+    {
+      "event_id": "65f85ab5ec6b",
+      "bin_id": "WV-001",
+      "label": "UNKNOWN OBJECT",
+      "confidence": 0.277,
+      "captured_at": "2026-07-05T17:00:07Z",
+      "image_url": "/data/captures/65f85ab5ec6b.jpg",
+      "description": "Visually closest to greasy or wet paper package, clean paper or cardboard package, human hand or person",
+      "top_guesses": [
+        {
+          "label": "greasy or wet paper package",
+          "bin": "GARBAGE",
+          "score": 0.2772
+        },
+        {
+          "label": "clean paper or cardboard package",
+          "bin": "RECYCLING",
+          "score": 0.2728
+        },
+        {
+          "label": "human hand or person",
+          "bin": "UNKNOWN",
+          "score": 0.2699
+        }
+      ],
+      "learning_status": "needs-more-evidence",
+      "learning_message": "No safe automatic match yet"
+    }
+  ]
+}
