@@ -75,6 +75,7 @@ h1, h2, h3, p, dl, dd { margin: 0; }
   user-select: none;
 }
 .logo-mark-lg { width: 56px; height: 56px; font-size: 34px; border-radius: 14px; }
+.logo-mark-sm { width: 20px; height: 20px; font-size: 12px; border-radius: 6px; }
 
 .site-nav { display: flex; flex-direction: column; gap: 1px; flex: 1; border-top: 1px solid var(--border); padding-top: 8px; }
 .nav-link {
