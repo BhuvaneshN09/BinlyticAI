@@ -1,0 +1,86 @@
+{
+  "site": {
+    "name": "WasteVision",
+    "subtitle": "Bin monitor"
+  },
+  "bins": [
+    {
+      "id": "WV-001",
+      "name": "WasteVision Bin 01",
+      "location": "Location not set",
+      "floor": null,
+      "distance_m": null,
+      "map_x": 50,
+      "map_y": 50,
+      "last_updated": null,
+      "compartments": [
+        {
+          "type": "RECYCLING"
+        },
+        {
+          "type": "COMPOST"
+        },
+        {
+          "type": "GARBAGE"
+        },
+        {
+          "type": "HAZARDOUS"
+        },
+        {
+          "type": "UNKNOWN"
+        }
+      ],
+      "last_ai_detection": {
+        "event_id": "79f7399929",
+        "bin_id": "WV-001",
+        "label": "thermal cash register receipt",
+        "destination": "GARBAGE",
+        "confidence": 0.279,
+        "detected_at": "2026-07-06T00:10:00Z",
+        "status": "waiting_for_sensor"
+      }
+    }
+  ],
+  "pending": {
+    "WV-001": {
+      "event_id": "79f7399929",
+      "bin_id": "WV-001",
+      "label": "thermal cash register receipt",
+      "destination": "GARBAGE",
+      "confidence": 0.279,
+      "detected_at": "2026-07-06T00:10:00Z",
+      "status": "waiting_for_sensor"
+    }
+  },
+  "history": [],
+  "unknowns": [
+    {
+      "event_id": "5eb297f5bb13",
+      "bin_id": "WV-001",
+      "label": "UNKNOWN OBJECT",
+      "confidence": 0.251,
+      "captured_at": "2026-07-06T00:09:47Z",
+      "image_url": "/data/captures/5eb297f5bb13.jpg",
+      "description": "Visually closest to phone electronic device or cable, battery or hazardous small item, pen pencil or small tool",
+      "top_guesses": [
+        {
+          "label": "phone electronic device or cable",
+          "bin": "E-WASTE",
+          "score": 0.2512
+        },
+        {
+          "label": "battery or hazardous small item",
+          "bin": "UNKNOWN",
+          "score": 0.2496
+        },
+        {
+          "label": "pen pencil or small tool",
+          "bin": "GARBAGE",
+          "score": 0.2465
+        }
+      ],
+      "learning_status": "needs-more-evidence",
+      "learning_message": "No safe automatic match yet"
+    }
+  ]
+}
