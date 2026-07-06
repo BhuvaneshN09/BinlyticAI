@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.idea/
+.vscode/
+.vercel/
+
+# Reference photos may be numerous or contain mall/customer imagery.
+# Remove this rule only after reviewing consent and repository size.
+reference_images/*
+!reference_images/.gitkeep
+
+# Camera captures of real objects/people — never publish these.
+dashboard/data/captures/
