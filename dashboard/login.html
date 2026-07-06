@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Binlytic AI — Sign in</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2C9.4 2 4 7.4 4 14c0 8.4 10.2 15.3 11.4 16 .4.2.8.2 1.2 0C17.8 29.3 28 22.4 28 14 28 7.4 22.6 2 16 2z' fill='%2358d6a1'/%3E%3Cpath d='M11 11h10l-.8 10H11.8L11 11zm-1.5-2.4h13M13.5 8.6l.7-2h3.6l.7 2' stroke='%23000' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070707'/%3E%3Crect x='.5' y='.5' width='63' height='63' rx='13.5' fill='none' stroke='%232c2c2c'/%3E%3Ctext x='33' y='35' font-family='Georgia, serif' font-style='italic' font-size='44' fill='%23aeb2b6' text-anchor='middle' dominant-baseline='central'%3EB%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="/styles.css">
 <style>
   .auth-shell { min-height: 100vh; display: grid; grid-template-columns: 1fr 1.05fr; background: var(--bg); }
 
   /* Left: wordmark, headline, card */
   .auth-left { display: flex; flex-direction: column; padding: 34px 48px; }
-  .auth-brand { font-family: var(--serif); font-size: 18px; color: var(--text); text-decoration: none; }
+  .auth-brand { font-family: var(--serif); font-size: 18px; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 11px; }
   .auth-brand small { display: block; font-size: 8.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .24em; margin-top: 3px; font-family: -apple-system, "Segoe UI", sans-serif; }
   .auth-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; }
   .auth-headline { font-family: var(--serif); font-size: clamp(34px, 3.6vw, 50px); font-weight: 400; line-height: 1.08; text-align: center; letter-spacing: -0.01em; }
@@ -95,11 +95,14 @@
 <body>
 <div class="auth-shell">
   <div class="auth-left">
-    <a class="auth-brand" href="/login.html">Binlytic AI<small>Smart Bin Network</small></a>
+    <a class="auth-brand" href="/login.html">
+      <span class="logo-mark">B</span>
+      <span>Binlytic AI<small>Smart Bin Network</small></span>
+    </a>
 
     <div class="auth-center">
-      <h1 class="auth-headline">Mississauga Mall</h1>
-      <p class="auth-tagline">Smart bin network · operator sign in</p>
+      <h1 class="auth-headline">Welcome back.</h1>
+      <p class="auth-tagline">Sign in to monitor your smart bins.</p>
 
       <form id="login-form" class="auth-card">
         <div class="auth-card-body">

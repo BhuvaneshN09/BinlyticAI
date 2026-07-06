@@ -56,9 +56,25 @@ h1, h2, h3, p, dl, dd { margin: 0; }
   padding: 26px 16px 18px;
   position: sticky; top: 0; height: 100vh; z-index: 1100; /* above Leaflet controls (1000) */
 }
-.wordmark { text-decoration: none; color: var(--text); display: block; padding: 0 8px 24px; }
+.wordmark { text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 11px; padding: 0 8px 24px; }
+.wordmark-text { display: block; }
 .wordmark-name { font-family: var(--serif); font-size: 17px; font-weight: 400; line-height: 1.1; display: block; }
 .wordmark-tagline { font-size: 8.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .24em; margin-top: 4px; display: block; }
+
+/* The "B" mark: italic serif glyph on a dark tile, echoing the login art panel */
+.logo-mark {
+  width: 34px; height: 34px; flex: 0 0 auto;
+  display: grid; place-items: center;
+  font-family: var(--serif); font-style: italic; font-size: 21px; line-height: 1;
+  color: #aeb2b6;
+  background:
+    radial-gradient(120% 120% at 20% 15%, rgba(88, 214, 161, 0.12), transparent 55%),
+    radial-gradient(120% 120% at 85% 90%, rgba(111, 161, 242, 0.10), transparent 55%),
+    #070707;
+  border: 1px solid var(--border-strong); border-radius: 9px;
+  user-select: none;
+}
+.logo-mark-lg { width: 56px; height: 56px; font-size: 34px; border-radius: 14px; }
 
 .site-nav { display: flex; flex-direction: column; gap: 1px; flex: 1; border-top: 1px solid var(--border); padding-top: 8px; }
 .nav-link {
