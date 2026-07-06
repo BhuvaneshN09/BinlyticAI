@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <title>Binlytic AI — Mississauga Mall</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2C9.4 2 4 7.4 4 14c0 8.4 10.2 15.3 11.4 16 .4.2.8.2 1.2 0C17.8 29.3 28 22.4 28 14 28 7.4 22.6 2 16 2z' fill='%2358d6a1'/%3E%3Cpath d='M11 11h10l-.8 10H11.8L11 11zm-1.5-2.4h13M13.5 8.6l.7-2h3.6l.7 2' stroke='%23000' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <script>
+    if (!localStorage.getItem("binlytic-session")) window.location.replace("/login.html");
+  </script>
+
+  <div class="splash-screen" id="splash-screen">
+    <div class="splash-inner">
+      <div class="splash-name">Mississauga Mall</div>
+      <p class="splash-mission">Binlytic AI · smart bin network</p>
+      <div class="splash-stats">
+        <div class="splash-stat">
+          <span class="splash-stat-value" id="splash-weight-value">—</span>
+          <div class="splash-stat-label">estimated kg diverted</div>
+        </div>
+        <div class="splash-stat">
+          <span class="splash-stat-value" id="splash-co2-value">—</span>
+          <div class="splash-stat-label">estimated kg CO2 saved</div>
+        </div>
+      </div>
+      <span class="splash-secondary" id="splash-secondary"></span>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="wordmark" href="#">
+        <span class="wordmark-name">Binlytic AI</span>
+        <span class="wordmark-tagline">Mississauga Mall</span>
+      </a>
+
+      <nav class="site-nav">
+        <button class="nav-link active" data-view="overview">Overview</button>
+        <button class="nav-link" data-view="analytics">Analytics</button>
+        <button class="nav-link" data-view="history">Confirmed Items</button>
+        <button class="nav-link" data-view="unknowns">
+          Unknown Objects
+          <span class="nav-badge" id="unknown-nav-badge"></span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="controller-pill offline" id="controller-pill">
+          <span class="controller-dot"></span>
+          <div><strong>Offline</strong><small id="controller-detail">COM5 not detected</small></div>
+        </div>
+        <div class="session-row">
+          <span class="session-label" id="session-user-label"></span>
+          <button id="sign-out-button" class="icon-button">Sign out</button>
+        </div>
+        <a href="https://github.com/BhuvaneshN09/BinlyticAI" id="github-link" target="_blank" rel="noopener" class="sidebar-github">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.7 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+          View source on GitHub
+        </a>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <div class="pageband">
+        <div>
+          <div class="topbar-title" id="page-title">Overview</div>
+          <div class="topbar-subtitle" id="page-subtitle">Live status of the Mississauga Mall smart bin</div>
+        </div>
+        <div class="topbar-right">
+          <span class="live-clock" id="live-clock">--:--:--</span>
+          <button class="icon-button" id="refresh-button">
+            <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <main class="page-content">
+
+        <!-- OVERVIEW -->
+        <section class="view active" id="view-overview">
+          <section class="hero-panel" id="hero-panel" aria-label="Mississauga Mall smart bin status">
+            <div>
+              <div class="hero-kicker">Smart Bin Network</div>
+              <h1>Mississauga Mall</h1>
+              <div class="hero-chips">
+                <span id="hero-bin-count">1 bin found</span>
+                <span id="hero-confirmed-count">0 confirmed</span>
+                <span id="hero-unknown-count">0 unknown</span>
+              </div>
+            </div>
+            <div class="hero-card">
+              <div>
+                <div class="hero-card-label">Current status</div>
+                <div class="hero-card-value" id="hero-controller-state">Waiting for connection</div>
+                <div class="hero-card-note" id="hero-controller-note">COM5 not detected</div>
+              </div>
+              <div class="hero-mini-grid">
+                <div><strong id="hero-today-count">0</strong><span>today</span></div>
+                <div><strong id="hero-diversion-rate">0%</strong><span>diverted</span></div>
+                <div><strong id="hero-learned-count">0</strong><span>learned</span></div>
+              </div>
+            </div>
+          </section>
+
+          <div class="overview-grid">
+            <article class="card">
+              <div class="card-header">
+                <div><h2>Bin locations</h2><small id="map-subtitle">Locating…</small></div>
+                <button class="icon-button" id="recenter-map-button">
+                  <svg viewBox="0 0 24 24"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="6"/></svg>
+                  My location
+                </button>
+              </div>
+              <div class="map-canvas" id="map-canvas" aria-label="Map of Binlytic smart bins"></div>
+            </article>
+
+            <div class="stack">
+              <article class="card">
+                <div class="card-header">
+                  <div><h2>Latest detection</h2><small>What the camera decided most recently</small></div>
+                </div>
+                <div class="card-body" id="last-detection-content"></div>
+              </article>
+
+              <article class="card">
+                <div class="card-header">
+                  <div><h2>Environmental impact</h2><small>Estimated from confirmed items, except where noted</small></div>
+                </div>
+                <div class="card-body">
+                  <div class="impact-grid" id="impact-grid-home"></div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="kpi-grid" id="kpi-grid"></div>
+        </section>
+
+        <!-- ANALYTICS -->
+        <section class="view" id="view-analytics">
+          <div class="analytics-grid">
+            <article class="card">
+              <div class="card-header"><div><h2>Waste stream breakdown</h2><small>All confirmed items</small></div></div>
+              <div class="card-body"><div class="donut-wrap" id="donut-wrap"></div></div>
+            </article>
+            <article class="card">
+              <div class="card-header"><div><h2>Activity, last 24 hours</h2><small>Confirmed items per hour</small></div></div>
+              <div class="card-body"><div class="bar-chart" id="activity-chart"></div></div>
+            </article>
+          </div>
+
+          <article class="card">
+            <div class="card-header"><div><h2>Most frequent items</h2><small>Ranked by confirmed count</small></div></div>
+            <div class="card-body"><table class="rank-table" id="rank-table"><tbody></tbody></table></div>
+          </article>
+
+          <article class="card">
+            <div class="card-header">
+              <div><h2>Environmental impact</h2><small>Estimated from confirmed items, except where noted</small></div>
+              <div class="section-actions">
+                <button class="danger-action" id="clear-training-button" data-default-label="Clear all training data">Clear all training data</button>
+              </div>
+            </div>
+            <div class="card-body"><div class="impact-grid" id="impact-grid"></div></div>
+          </article>
+        </section>
+
+        <!-- HISTORY -->
+        <section class="view" id="view-history">
+          <article class="card">
+            <div class="card-header">
+              <div><h2>Confirmed items</h2><small id="history-count">0 items</small></div>
+              <div class="section-actions">
+                <button class="icon-button" id="export-csv-button">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4"/><path d="M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                  Export CSV
+                </button>
+                <button class="bin-clear-action" data-destination="RECYCLING" data-default-label="Clear recycling">Clear recycling</button>
+                <button class="bin-clear-action" data-destination="COMPOST" data-default-label="Clear compost">Clear compost</button>
+                <button class="bin-clear-action" data-destination="GARBAGE" data-default-label="Clear garbage">Clear garbage</button>
+                <button class="danger-action" id="clear-everything-button" data-default-label="Clear everything">Clear everything</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding-bottom:0;">
+              <div class="filter-bar">
+                <input type="search" id="history-search" placeholder="Search by item label…">
+                <select id="history-filter">
+                  <option value="">All destinations</option>
+                  <option value="RECYCLING">Recycling</option>
+                  <option value="COMPOST">Compost</option>
+                  <option value="GARBAGE">Garbage</option>
+                  <option value="E-WASTE">E-waste</option>
+                  <option value="HAZARDOUS">Hazardous</option>
+                </select>
+              </div>
+            </div>
+            <div id="history-content"></div>
+          </article>
+        </section>
+
+        <!-- UNKNOWNS -->
+        <section class="view" id="view-unknowns">
+          <article class="card">
+            <div class="card-header">
+              <div><h2>Unknown objects</h2><small id="unknown-count">0 captures</small></div>
+            </div>
+            <div id="unknown-content"></div>
+          </article>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div class="modal-box" id="modal-box"></div>
+  </div>
+
+  <div class="toast-stack" id="toast-stack"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/app.js"></script>
+</body>
+</html>

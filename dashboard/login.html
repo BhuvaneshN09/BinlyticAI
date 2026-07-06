@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Binlytic AI — Sign in</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2C9.4 2 4 7.4 4 14c0 8.4 10.2 15.3 11.4 16 .4.2.8.2 1.2 0C17.8 29.3 28 22.4 28 14 28 7.4 22.6 2 16 2z' fill='%2358d6a1'/%3E%3Cpath d='M11 11h10l-.8 10H11.8L11 11zm-1.5-2.4h13M13.5 8.6l.7-2h3.6l.7 2' stroke='%23000' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  .auth-shell { min-height: 100vh; display: grid; grid-template-columns: 1fr 1.05fr; background: var(--bg); }
+
+  /* Left: wordmark, headline, card */
+  .auth-left { display: flex; flex-direction: column; padding: 34px 48px; }
+  .auth-brand { font-family: var(--serif); font-size: 18px; color: var(--text); text-decoration: none; }
+  .auth-brand small { display: block; font-size: 8.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .24em; margin-top: 3px; font-family: -apple-system, "Segoe UI", sans-serif; }
+  .auth-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; }
+  .auth-headline { font-family: var(--serif); font-size: clamp(34px, 3.6vw, 50px); font-weight: 400; line-height: 1.08; text-align: center; letter-spacing: -0.01em; }
+  .auth-headline em { font-style: italic; color: var(--text-dim); }
+  .auth-tagline { text-align: center; color: var(--text-dim); font-size: 13.5px; line-height: 1.6; max-width: 40ch; margin-top: -8px; }
+
+  .auth-card { width: 380px; max-width: 100%; border: 1px solid var(--border-strong); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .auth-card-banner {
+    padding: 10px 16px; font-size: 11px; color: var(--accent);
+    background: var(--accent-dim); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .auth-card-banner b { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; border: 1px solid currentColor; border-radius: 4px; padding: 1px 6px; font-weight: 500; }
+  .auth-card-body { padding: 22px 22px 20px; }
+  .auth-field label { font-size: 9.5px; color: var(--text-faint); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .14em; }
+  .auth-field input {
+    width: 100%; margin-bottom: 14px; border: 1px solid var(--border-strong);
+    background: var(--bg); border-radius: 8px; padding: 11px 13px;
+    font-size: 13px; color: var(--text); transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .auth-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+  #login-error { color: var(--danger); font-size: 11.5px; margin-bottom: 12px; display: none; }
+  .auth-submit {
+    width: 100%; padding: 12px; cursor: pointer;
+    border: 0; border-radius: 8px;
+    background: var(--text); color: var(--bg); font-weight: 600; font-size: 13px;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .auth-submit:hover { opacity: .92; transform: translateY(-1px); }
+  .auth-submit:active { transform: translateY(0); }
+  .auth-card.shake { animation: shake .4s ease; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-7px); } 50% { transform: translateX(6px); } 75% { transform: translateX(-3px); } }
+  .auth-github {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--text-faint); text-decoration: none; font-size: 11px;
+    border: 1px solid var(--border-strong); border-radius: 999px; padding: 8px 16px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .auth-github:hover { color: var(--text); border-color: var(--text-dim); }
+
+  /* Right: art panel — layered "sorting" arcs, no images */
+  .auth-art {
+    margin: 22px; border-radius: 16px; position: relative; overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 15% 10%, rgba(88, 214, 161, 0.14), transparent 50%),
+      radial-gradient(110% 90% at 90% 85%, rgba(111, 161, 242, 0.12), transparent 52%),
+      radial-gradient(90% 70% at 75% 20%, rgba(184, 140, 240, 0.08), transparent 55%),
+      #070707;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .auth-art-glyph {
+    font-family: var(--serif); font-style: italic;
+    font-size: clamp(220px, 30vw, 420px); line-height: 1;
+    color: transparent;
+    background: linear-gradient(160deg, rgba(237, 237, 237, 0.16), rgba(237, 237, 237, 0.03));
+    -webkit-background-clip: text; background-clip: text;
+    user-select: none;
+  }
+  .auth-art::before, .auth-art::after {
+    content: ""; position: absolute; border-radius: 50%;
+    border: 1px solid rgba(237, 237, 237, 0.07);
+  }
+  .auth-art::before { width: 68%; aspect-ratio: 1; left: -18%; bottom: -22%; }
+  .auth-art::after { width: 52%; aspect-ratio: 1; right: -14%; top: -16%; border-color: rgba(88, 214, 161, 0.12); }
+  .auth-art-caption {
+    position: absolute; bottom: 26px; left: 30px; right: 30px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+    color: var(--text-faint); text-transform: uppercase;
+  }
+  .auth-art-caption .streams { display: flex; gap: 8px; }
+  .auth-art-caption .streams i { width: 8px; height: 8px; border-radius: 2px; display: block; }
+
+  @media (max-width: 900px) {
+    .auth-shell { grid-template-columns: 1fr; }
+    .auth-art { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="auth-shell">
+  <div class="auth-left">
+    <a class="auth-brand" href="/login.html">Binlytic AI<small>Smart Bin Network</small></a>
+
+    <div class="auth-center">
+      <h1 class="auth-headline">Mississauga Mall</h1>
+      <p class="auth-tagline">Smart bin network · operator sign in</p>
+
+      <form id="login-form" class="auth-card">
+        <div class="auth-card-body">
+          <div class="auth-field">
+            <label for="login-username">Operator username</label>
+            <input id="login-username" type="text" placeholder="Username" autocomplete="username" required>
+          </div>
+          <div class="auth-field">
+            <label for="login-password">Password</label>
+            <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" required>
+          </div>
+          <div class="auth-field">
+            <label for="login-bin-id">Bin ID to connect (optional)</label>
+            <input id="login-bin-id" type="text" placeholder="e.g. WV-001">
+          </div>
+          <div id="login-error">Incorrect username or password.</div>
+          <button type="submit" class="auth-submit">Sign in</button>
+        </div>
+      </form>
+
+      <a class="auth-github" href="https://github.com/BhuvaneshN09/BinlyticAI" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.4-1.3-5.4-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.7 5.6-5.4 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        Open source on GitHub
+      </a>
+    </div>
+  </div>
+
+  <div class="auth-art" aria-hidden="true">
+    <span class="auth-art-glyph">B</span>
+    <div class="auth-art-caption">
+      <span>Recycling · Compost · Garbage</span>
+      <span class="streams">
+        <i style="background: var(--recycling);"></i>
+        <i style="background: var(--compost);"></i>
+        <i style="background: var(--garbage);"></i>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+// Single hardcoded demo account — no backend/database, client-side only.
+const DEMO_USERNAME = "MississaugaMall";
+const DEMO_PASSWORD = "Malltest123";
+
+const card = document.getElementById("login-form");
+card.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const username = document.getElementById("login-username").value.trim();
+  const password = document.getElementById("login-password").value;
+  const binId = document.getElementById("login-bin-id").value.trim();
+
+  if (username !== DEMO_USERNAME || password !== DEMO_PASSWORD) {
+    document.getElementById("login-error").style.display = "block";
+    card.classList.remove("shake");
+    void card.offsetWidth;
+    card.classList.add("shake");
+    return;
+  }
+  localStorage.setItem("binlytic-session", username);
+  if (binId) localStorage.setItem("binlytic-connected-bin", binId);
+  window.location.href = "/";
+});
+</script>
+</body>
+</html>
