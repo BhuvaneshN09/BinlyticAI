@@ -10,7 +10,7 @@ const int GARBAGE_SERVO_PIN = 22;
 const int RECYCLING_SERVO_PIN = 12;
 const int COMPOST_SERVO_PIN = 14;
 
-// Best known angles for the current build.
+// Servo angles.
 const int GARBAGE_CLOSED = 0;
 const int GARBAGE_OPEN = 90;
 
@@ -21,11 +21,14 @@ const int COMPOST_CLOSED = 60;   // reversed servo
 const int COMPOST_OPEN = 170;
 
 // Ultrasonic sensors.
-const int COMPOST_TRIG_PIN = 5;
-const int COMPOST_ECHO_PIN = 18;
-
 const int GARBAGE_TRIG_PIN = 25;
 const int GARBAGE_ECHO_PIN = 34;
+
+const int RECYCLING_TRIG_PIN = 26;
+const int RECYCLING_ECHO_PIN = 27;
+
+const int COMPOST_TRIG_PIN = 5;
+const int COMPOST_ECHO_PIN = 18;
 
 // Detection range.
 const float MIN_DISTANCE_CM = 2.0;
@@ -34,7 +37,6 @@ const float MAX_DISTANCE_CM = 27.0;
 // Timing.
 const unsigned long SENSOR_DELAY_MS = 10UL;
 const unsigned long US_TIMEOUT_MS = 12000UL;
-const unsigned long RECYCLING_OPEN_TIME_MS = 3000UL;
 const unsigned long SERVO_SETTLE_MS = 350UL;
 const unsigned long SERVO_BOOT_SILENCE_MS = 3000UL;
 
@@ -88,7 +90,6 @@ void openGarbage() {
   attachGarbageServo();
   garbageServo.write(GARBAGE_OPEN);
   delay(SERVO_SETTLE_MS);
-  garbageServo.detach();
 }
 
 void closeRecycling() {
@@ -102,7 +103,6 @@ void openRecycling() {
   attachRecyclingServo();
   recyclingServo.write(RECYCLING_OPEN);
   delay(SERVO_SETTLE_MS);
-  recyclingServo.detach();
 }
 
 void closeCompost() {
@@ -116,7 +116,6 @@ void openCompost() {
   attachCompostServo();
   compostServo.write(COMPOST_OPEN);
   delay(SERVO_SETTLE_MS);
-  compostServo.detach();
 }
 
 void closeAll() {
@@ -168,6 +167,13 @@ void finishGarbageRoute(float distanceCm) {
   Serial.println(distanceCm, 1);
 }
 
+void finishRecyclingRoute(float distanceCm) {
+  closeRecycling();
+  resetRouteState();
+  Serial.print("OBJECT,RECYCLING,");
+  Serial.println(distanceCm, 1);
+}
+
 void finishCompostRoute(float distanceCm) {
   closeCompost();
   resetRouteState();
@@ -198,6 +204,8 @@ void startRecyclingRoute() {
   openRecycling();
   activeRoute = ROUTE_RECYCLING;
   routeStartedAt = millis();
+  lastSensorReadingAt = millis();
+  nearReadingCount = 0;
   Serial.println("OPEN,RECYCLING");
 }
 
@@ -215,11 +223,15 @@ void startCompostRoute() {
   Serial.println("OPEN,COMPOST");
 }
 
-void updateGarbageRoute() {
+void updateSensorRoute(int trigPin, int echoPin, const char *destination, void (*finishRoute)(float)) {
   if (millis() - routeStartedAt >= US_TIMEOUT_MS) {
-    closeGarbage();
+    if (destination[0] == 'G') closeGarbage();
+    else if (destination[0] == 'R') closeRecycling();
+    else closeCompost();
+
     resetRouteState();
-    Serial.println("TIMEOUT,GARBAGE");
+    Serial.print("TIMEOUT,");
+    Serial.println(destination);
     return;
   }
 
@@ -228,58 +240,22 @@ void updateGarbageRoute() {
   }
 
   lastSensorReadingAt = millis();
-  float distanceCm = readDistanceCM(GARBAGE_TRIG_PIN, GARBAGE_ECHO_PIN);
+  float distanceCm = readDistanceCM(trigPin, echoPin);
 
   if (DEBUG_DISTANCE && distanceCm > 0) {
-    Serial.print("DISTANCE,GARBAGE,");
+    Serial.print("DISTANCE,");
+    Serial.print(destination);
+    Serial.print(",");
     Serial.println(distanceCm, 1);
   }
 
   if (objectDetected(distanceCm)) {
     nearReadingCount++;
     if (nearReadingCount >= REQUIRED_NEAR_READINGS) {
-      finishGarbageRoute(distanceCm);
+      finishRoute(distanceCm);
     }
   } else {
     nearReadingCount = 0;
-  }
-}
-
-void updateCompostRoute() {
-  if (millis() - routeStartedAt >= US_TIMEOUT_MS) {
-    closeCompost();
-    resetRouteState();
-    Serial.println("TIMEOUT,COMPOST");
-    return;
-  }
-
-  if (millis() - lastSensorReadingAt < SENSOR_DELAY_MS) {
-    return;
-  }
-
-  lastSensorReadingAt = millis();
-  float distanceCm = readDistanceCM(COMPOST_TRIG_PIN, COMPOST_ECHO_PIN);
-
-  if (DEBUG_DISTANCE && distanceCm > 0) {
-    Serial.print("DISTANCE,COMPOST,");
-    Serial.println(distanceCm, 1);
-  }
-
-  if (objectDetected(distanceCm)) {
-    nearReadingCount++;
-    if (nearReadingCount >= REQUIRED_NEAR_READINGS) {
-      finishCompostRoute(distanceCm);
-    }
-  } else {
-    nearReadingCount = 0;
-  }
-}
-
-void updateRecyclingRoute() {
-  if (millis() - routeStartedAt >= RECYCLING_OPEN_TIME_MS) {
-    closeRecycling();
-    resetRouteState();
-    Serial.println("TIMER,RECYCLING");
   }
 }
 
@@ -311,16 +287,15 @@ void handleCommand(char command) {
     attachRecyclingServo();
     attachCompostServo();
 
-    garbageServo.write(GARBAGE_OPEN);
-    recyclingServo.write(RECYCLING_OPEN);
-    compostServo.write(COMPOST_OPEN);
+  garbageServo.write(GARBAGE_OPEN);
+  recyclingServo.write(RECYCLING_OPEN);
+  compostServo.write(COMPOST_OPEN);
 
-    delay(SERVO_SETTLE_MS);
-    detachAllServos();
+  delay(SERVO_SETTLE_MS);
 
-    Serial.println("OPEN,ALL");
-    return;
-  }
+  Serial.println("OPEN,ALL");
+  return;
+}
 
   if (command == '0' || command == 'X') {
     closeAll();
@@ -342,13 +317,16 @@ void handleCommand(char command) {
 void setup() {
   Serial.begin(9600);
 
-  pinMode(COMPOST_TRIG_PIN, OUTPUT);
-  pinMode(COMPOST_ECHO_PIN, INPUT);
   pinMode(GARBAGE_TRIG_PIN, OUTPUT);
   pinMode(GARBAGE_ECHO_PIN, INPUT);
+  pinMode(RECYCLING_TRIG_PIN, OUTPUT);
+  pinMode(RECYCLING_ECHO_PIN, INPUT);
+  pinMode(COMPOST_TRIG_PIN, OUTPUT);
+  pinMode(COMPOST_ECHO_PIN, INPUT);
 
-  digitalWrite(COMPOST_TRIG_PIN, LOW);
   digitalWrite(GARBAGE_TRIG_PIN, LOW);
+  digitalWrite(RECYCLING_TRIG_PIN, LOW);
+  digitalWrite(COMPOST_TRIG_PIN, LOW);
 
   detachAllServos();
   delay(SERVO_BOOT_SILENCE_MS);
@@ -372,17 +350,17 @@ void loop() {
   }
 
   if (activeRoute == ROUTE_GARBAGE) {
-    updateGarbageRoute();
-    return;
-  }
-
-  if (activeRoute == ROUTE_COMPOST) {
-    updateCompostRoute();
+    updateSensorRoute(GARBAGE_TRIG_PIN, GARBAGE_ECHO_PIN, "GARBAGE", finishGarbageRoute);
     return;
   }
 
   if (activeRoute == ROUTE_RECYCLING) {
-    updateRecyclingRoute();
+    updateSensorRoute(RECYCLING_TRIG_PIN, RECYCLING_ECHO_PIN, "RECYCLING", finishRecyclingRoute);
+    return;
+  }
+
+  if (activeRoute == ROUTE_COMPOST) {
+    updateSensorRoute(COMPOST_TRIG_PIN, COMPOST_ECHO_PIN, "COMPOST", finishCompostRoute);
     return;
   }
 }

@@ -148,22 +148,40 @@ def controller_status():
     """Report online only when the configured Arduino COM port exists."""
 
     if list_ports is None:
-        return {"port": SERIAL_PORT, "online": False}
+        return {"port": SERIAL_PORT, "online": False, "available_ports": []}
     try:
+        ports = list(list_ports.comports())
         port = next(
             (
                 candidate
-                for candidate in list_ports.comports()
+                for candidate in ports
                 if candidate.device.upper() == SERIAL_PORT.upper()
             ),
             None,
         )
+        if port is None:
+            keywords = ("arduino", "ch340", "cp210", "usb serial", "ftdi", "esp32")
+            port = next(
+                (
+                    candidate
+                    for candidate in ports
+                    if any(
+                        keyword in f"{candidate.description} {candidate.manufacturer or ''}".lower()
+                        for keyword in keywords
+                    )
+                ),
+                None,
+            )
     except Exception:
         port = None
     return {
-        "port": SERIAL_PORT,
+        "port": port.device if port is not None else SERIAL_PORT,
         "online": port is not None,
         "description": port.description if port is not None else None,
+        "available_ports": [
+            {"device": candidate.device, "description": candidate.description}
+            for candidate in ports
+        ] if "ports" in locals() else [],
     }
 
 
@@ -526,6 +544,9 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
+        self.send_header("Expires", "0")
         self.end_headers()
         self.wfile.write(body)
 

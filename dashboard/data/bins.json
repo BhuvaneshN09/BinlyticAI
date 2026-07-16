@@ -29,104 +29,10 @@
         {
           "type": "UNKNOWN"
         }
-      ],
-      "last_ai_detection": {
-        "event_id": "d4556ff5c2",
-        "bin_id": "WV-001",
-        "label": "fruit peel or core",
-        "destination": "COMPOST",
-        "confidence": 0.277,
-        "detected_at": "2026-07-06T00:10:24Z",
-        "status": "waiting_for_sensor"
-      }
+      ]
     }
   ],
   "pending": {},
   "history": [],
-  "unknowns": [
-    {
-      "event_id": "e20f9bd97fd5",
-      "bin_id": "WV-001",
-      "label": "UNKNOWN OBJECT",
-      "confidence": 0.224,
-      "captured_at": "2026-07-06T00:12:34Z",
-      "image_url": "/data/captures/e20f9bd97fd5.jpg",
-      "description": "Visually closest to used tissue napkin or paper towel, human hand or person, phone electronic device or cable",
-      "top_guesses": [
-        {
-          "label": "used tissue napkin or paper towel",
-          "bin": "GARBAGE",
-          "score": 0.2245
-        },
-        {
-          "label": "human hand or person",
-          "bin": "UNKNOWN",
-          "score": 0.2222
-        },
-        {
-          "label": "phone electronic device or cable",
-          "bin": "E-WASTE",
-          "score": 0.2176
-        }
-      ],
-      "learning_status": "needs-more-evidence",
-      "learning_message": "No safe automatic match yet"
-    },
-    {
-      "event_id": "2fdf5dde877e",
-      "bin_id": "WV-001",
-      "label": "UNKNOWN OBJECT",
-      "confidence": 0.225,
-      "captured_at": "2026-07-06T00:12:21Z",
-      "image_url": "/data/captures/2fdf5dde877e.jpg",
-      "description": "Visually closest to used tissue napkin or paper towel, human hand or person, phone electronic device or cable",
-      "top_guesses": [
-        {
-          "label": "used tissue napkin or paper towel",
-          "bin": "GARBAGE",
-          "score": 0.2251
-        },
-        {
-          "label": "human hand or person",
-          "bin": "UNKNOWN",
-          "score": 0.2228
-        },
-        {
-          "label": "phone electronic device or cable",
-          "bin": "E-WASTE",
-          "score": 0.2145
-        }
-      ],
-      "learning_status": "needs-more-evidence",
-      "learning_message": "No safe automatic match yet"
-    },
-    {
-      "event_id": "5eb297f5bb13",
-      "bin_id": "WV-001",
-      "label": "UNKNOWN OBJECT",
-      "confidence": 0.251,
-      "captured_at": "2026-07-06T00:09:47Z",
-      "image_url": "/data/captures/5eb297f5bb13.jpg",
-      "description": "Visually closest to phone electronic device or cable, battery or hazardous small item, pen pencil or small tool",
-      "top_guesses": [
-        {
-          "label": "phone electronic device or cable",
-          "bin": "E-WASTE",
-          "score": 0.2512
-        },
-        {
-          "label": "battery or hazardous small item",
-          "bin": "UNKNOWN",
-          "score": 0.2496
-        },
-        {
-          "label": "pen pencil or small tool",
-          "bin": "GARBAGE",
-          "score": 0.2465
-        }
-      ],
-      "learning_status": "needs-more-evidence",
-      "learning_message": "No safe automatic match yet"
-    }
-  ]
+  "unknowns": []
 }

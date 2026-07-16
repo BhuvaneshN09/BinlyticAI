@@ -8,6 +8,10 @@ from urllib.error import URLError
 from urllib.request import Request, urlopen
 import cv2
 import serial
+try:
+    from serial.tools import list_ports
+except ImportError:
+    list_ports = None
 import torch
 import torch.nn.functional as F
 from PIL import Image
@@ -21,6 +25,7 @@ RULE_SOURCE = (
     "houses/changes-to-recycling-program/"
 )
 
+CAMERA_SOURCE = os.getenv("WASTEVISION_CAMERA_SOURCE", "").strip()
 CAMERA_INDEX = int(os.getenv("WASTEVISION_CAMERA_INDEX", "0"))
 SERIAL_PORT = os.getenv("WASTEVISION_SERIAL_PORT", "COM5")
 DASHBOARD_API = os.getenv(
@@ -335,7 +340,7 @@ def build_items():
 
 
 class WasteVisionAI:
-    def __init__(self, camera_index=CAMERA_INDEX):
+    def __init__(self, camera_source=None, camera_index=CAMERA_INDEX):
         print("Loading CLIP model...")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = CLIPModel.from_pretrained(MODEL_NAME).to(
@@ -376,10 +381,19 @@ class WasteVisionAI:
 
         self.frame_count = 0
         self.classify_every_n_frames = 6
-        self.cap = cv2.VideoCapture(camera_index)
+        source = camera_source if camera_source is not None else self.default_camera_source()
+        self.cap = cv2.VideoCapture(source)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         print(f"Ready. Running on {self.device}.")
+
+    @staticmethod
+    def default_camera_source():
+        if CAMERA_SOURCE:
+            if CAMERA_SOURCE.isdigit():
+                return int(CAMERA_SOURCE)
+            return CAMERA_SOURCE
+        return CAMERA_INDEX
 
     def extract_features(self, output, modality):
         """Support old and new Transformers CLIP return types."""
@@ -649,14 +663,48 @@ class WasteVisionAI:
 
     def connect_arduino(self, port):
         try:
-            self.arduino = serial.Serial(port, 9600, timeout=0)
+            chosen_port = self.autodetect_arduino_port(port)
+            if chosen_port != port:
+                print(f"Arduino port auto-detected: {chosen_port}")
+            # Open with DTR/RTS deasserted: pyserial's defaults pull the
+            # ESP32's GPIO0 low during the open-triggered reset, booting it
+            # into the flash bootloader (silent) instead of the sketch.
+            self.arduino = serial.Serial()
+            self.arduino.port = chosen_port
+            self.arduino.baudrate = 9600
+            self.arduino.timeout = 0
+            self.arduino.dtr = False
+            self.arduino.rts = False
+            self.arduino.open()
+            # Clean reset pulse with GPIO0 held high -> normal boot.
+            self.arduino.rts = True
+            time.sleep(0.1)
+            self.arduino.rts = False
             # ESP32 keeps servo signals off for 3 seconds, then homes the flaps.
             time.sleep(4.5)
-            print(f"Arduino connected on {port}.")
+            print(f"Arduino connected on {chosen_port}.")
         except Exception as error:
             self.arduino = None
             print(f"Arduino not connected on {port}: {error}")
             print("Program will still run without Arduino output.")
+
+    def autodetect_arduino_port(self, preferred_port):
+        if not list_ports:
+            return preferred_port
+
+        ports = list(list_ports.comports())
+        preferred_upper = preferred_port.upper()
+        for candidate in ports:
+            if candidate.device.upper() == preferred_upper:
+                return candidate.device
+
+        keywords = ("arduino", "ch340", "cp210", "usb serial", "ftdi", "esp32")
+        for candidate in ports:
+            haystack = f"{candidate.description} {candidate.manufacturer or ''}".lower()
+            if any(keyword in haystack for keyword in keywords):
+                return candidate.device
+
+        return preferred_port
 
     def send_to_arduino(self, command):
         if (

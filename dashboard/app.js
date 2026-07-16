@@ -200,14 +200,29 @@ function computeAnalytics(history) {
 
 function renderControllerStatus(controller) {
   const online = Boolean(controller?.online);
+  const isMirror = controller?.mode === "mirror";
   const port = controller?.port || "COM5";
+  const availablePorts = Array.isArray(controller?.available_ports) ? controller.available_ports : [];
+  const portList = availablePorts.map((item) => item.device).filter(Boolean);
   const pill = qs("#controller-pill");
-  pill.className = `controller-pill ${online ? "online" : ""}`;
+  pill.className = `controller-pill ${online || isMirror ? "online" : ""}`;
+  if (isMirror) {
+    pill.innerHTML = `
+      <span class="controller-dot pulse"></span>
+      <div>
+        <strong>Cloud mirror</strong>
+        <small>${controller.mirror_fresh ? "Synced from the mall bin" : "Awaiting first sync"}</small>
+      </div>`;
+    return;
+  }
+  const offlineDetail = portList.length
+    ? `${port} not detected; found ${portList.join(", ")}`
+    : `${port} not detected`;
   pill.innerHTML = `
     <span class="controller-dot ${online ? "pulse" : ""}"></span>
     <div>
       <strong>${online ? "Online" : "Offline"}</strong>
-      <small>${online ? `${port} detected` : `${port} not detected`}</small>
+      <small>${online ? `${port} detected` : offlineDetail}</small>
     </div>`;
 }
 
@@ -221,8 +236,13 @@ function renderHero(analytics, bins, unknowns, controller) {
   qs("#hero-bin-count").textContent = `${bins.length} bin${bins.length === 1 ? "" : "s"} found`;
   qs("#hero-confirmed-count").textContent = `${analytics.totalConfirmed} confirmed`;
   qs("#hero-unknown-count").textContent = `${unknowns.length} unknown`;
-  qs("#hero-controller-state").textContent = online ? "Controller online" : "Controller offline";
-  qs("#hero-controller-note").textContent = online ? `${port} detected` : `${port} not detected`;
+  const isMirror = controller?.mode === "mirror";
+  qs("#hero-controller-state").textContent = isMirror
+    ? "Cloud mirror"
+    : online ? "Controller online" : "Controller offline";
+  qs("#hero-controller-note").textContent = isMirror
+    ? "Live copy of the mall bin's state"
+    : online ? `${port} detected` : `${port} not detected`;
   qs("#hero-today-count").textContent = analytics.totalToday;
   qs("#hero-diversion-rate").textContent = `${analytics.diversionRate}%`;
   qs("#hero-learned-count").textContent = learnedClasses;
@@ -518,11 +538,22 @@ function unknownCardMarkup(event) {
 
 function openUnknownModal(event) {
   qs("#modal-box").innerHTML = `
-    <img src="${escapeHtml(event.image_url)}" alt="Unknown object captured by Binlytic">
+    <div class="modal-visual">
+      <img src="${escapeHtml(event.image_url)}" alt="Unknown object captured by Binlytic">
+      <div class="modal-visual-overlay">
+        <span class="modal-kicker">Unknown capture</span>
+        <strong>Needs review</strong>
+      </div>
+    </div>
     <div class="modal-box-body">
-      <h2 style="margin-bottom:8px;">Unknown object</h2>
-      <p style="color:var(--text-dim); font-size:12px; line-height:1.5;">${escapeHtml(event.description || "No description available")}</p>
-      <ul class="guess-list">${(event.top_guesses || []).map((guess, index) => `
+      <h2>Unknown object</h2>
+      <p class="modal-description">${escapeHtml(event.description || "No description available")}</p>
+      <div class="modal-meta-row">
+        <span class="modal-meta-pill">${escapeHtml(new Date(event.captured_at).toLocaleString())}</span>
+        <span class="modal-meta-pill ${event.learning_status === "learned" ? "is-learned" : ""}">${escapeHtml(event.learning_message || "Waiting for evidence")}</span>
+      </div>
+      <div class="modal-section-label">Top guesses</div>
+      <ul class="guess-list guess-list-modal">${(event.top_guesses || []).map((guess, index) => `
         <li><span>${index + 1}. ${escapeHtml(titleCase(guess.label))} (${guess.bin})</span><strong>${Number(guess.score || 0).toFixed(3)}</strong></li>
       `).join("")}</ul>
     </div>`;
